@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoSpec — AI that writes its own spec, builds & tests</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>AutoSpec</h1>
+      <span class="tag">One brief in → spec, code & passing tests out. Autonomously.</span>
+    </div>
+    <span class="badge-challenge">AWS · Kiro Hackathon · Challenge 8</span>
+  </header>
+
+  <div class="layout">
+    <!-- Input panel -->
+    <aside class="card">
+      <h3>Product Brief</h3>
+      <label for="brief">Describe what to build (plain English)</label>
+      <textarea id="brief">Build a tip calculator that takes a bill total, a tip percentage, and a number of people, and returns the tip amount, the total with tip, and the amount each person owes. Round money to 2 decimal places. 0% tip is allowed. The number of people must be at least 1; reject 0 or negative.</textarea>
+      <div class="row">
+        <div>
+          <label for="stack">Tech stack</label>
+          <select id="stack">
+            <option value="Python" selected>Python</option>
+            <option value="Node">Node</option>
+          </select>
+        </div>
+        <div>
+          <label for="threshold">Coverage target %</label>
+          <input id="threshold" type="number" min="0" max="100" value="90" />
+        </div>
+      </div>
+      <button class="run" id="runBtn">▶ Run AutoSpec pipeline</button>
+    </aside>
+
+    <!-- Main panel -->
+    <main>
+      <div class="card" style="margin-bottom:18px;">
+        <h3>Agent Pipeline</h3>
+        <div class="pipeline" id="pipeline">
+          <div class="node" data-agent="Spec Agent"><div class="icon">📝</div><div class="name">Spec</div><div class="state"></div></div>
+          <div class="arrow flow">→</div>
+          <div class="node" data-agent="Build Agent"><div class="icon">🔨</div><div class="name">Build</div><div class="state"></div></div>
+          <div class="arrow flow">→</div>
+          <div class="node" data-agent="Test Agent"><div class="icon">🧪</div><div class="name">Test</div><div class="state"></div></div>
+          <div class="arrow flow">→</div>
+          <div class="node" data-agent="Review Agent"><div class="icon">🔍</div><div class="name">Review</div><div class="state"></div></div>
+        </div>
+
+        <div class="reattempt-toast" id="reattempt"></div>
+
+        <div class="verdict-banner" id="verdict">
+          <span class="big" id="verdictText">—</span>
+          <span id="verdictSub" style="color:var(--muted);font-size:13px;"></span>
+          <span class="cov-ring" id="covRing"></span>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Live Agent Stream</h3>
+          <div class="log" id="log"><span class="empty">Press “Run AutoSpec pipeline” to watch four agents hand off in real time.</span></div>
+        </div>
+
+        <div class="card">
+          <h3>Generated Artifacts</h3>
+          <div class="tabs" id="tabs">
+            <div class="tab active" data-tab="spec">Spec</div>
+            <div class="tab" data-tab="code">Code</div>
+            <div class="tab" data-tab="tests">Tests</div>
+            <div class="tab" data-tab="report">Results</div>
+            <div class="tab" data-tab="verdict">Verdict</div>
+          </div>
+          <div class="tab-body" id="tabBody"><span class="empty">Artifacts appear here as each agent produces them.</span></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

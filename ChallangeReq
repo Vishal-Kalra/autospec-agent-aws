@@ -1,0 +1,53 @@
+AWS * Kiro Hackathon • Challenge Briefing
+Challenge 8 • Stretch Challenge
+AutoSpec: Al Agent That Writes Its Own Spec, Builds, and Tests
+A multi-agent pipeline that takes a plain English brief and autonomously produces a spec, working code, and a passing test suite — end to end.
+PERSONA
+A product manager at a software consultancy who needs to rapidly prototype client ideas. They can describe what they want in plain English but have no engineering background. They want to hand a two-paragraph brief to an Al system and receive back a deployable prototype - with requirements documented, code written, and tests passing - ready to demo to the client the same day.
+INPUTS
+*   Plain English product brief (2-3 sentences)
+*   Acceptance criteria hints
+*   Tech stack preference (Python/Node)
+*   Quality threshold config (test coverage %)
+WHAT TO BUILD (USING KIRO)
+Use Kiro to design and orchestrate a pipeline of at least three specialised agents: a Spec Agent (converts the brief into structured requirements and acceptance criteria), a Build Agent (generates code from the spec), and a Test Agent (writes and runs unit tests against the code, reporting pass/fail). A fourth Review Agent that checks spec-to-code alignment is the bonus challenge. The pipeline should be triggered by a single input and produce all artefacts without human intervention mid-run.
+OUTPUTS & DELIVERABLES
+*   Live end-to-end pipeline demo
+*   Generated spec document (sample run)
+*   Agent handoff diagram
+*   Kiro spec + agent orchestration design
+*   Generated code + passing test results
+*   3-min pitch
+
+
+
+
+	
+9:30 AM - 9:45 AM	Opening remarks (Cognizant)
+9:45 AM - 10.15 AM	Future of Work (Cognizant)
+10:15 AM - 11:30 AM	AWS Kiro introduction & platform walkthrough
+11:30 AM - 11:35 AM	Team formation, challenge selection & briefing Q&A
+11:35 AM - 2:30 PM	Build time (lunch 12.15pm)
+2:30 PM - 3:15 PM	Selected team presentations & judging
+How the Hackathon Works
+Today's Schedule
+About AWS Kiro
+Kiro is AWS's agentic Al IDE that helps you go from prototype to production using spec-driven development. Instead of jumping straight to code, you describe what you want to build in plain English - Kiro turns that into a structured spec with requirements and acceptance criteria, then generates working code, documentation, and tests automatically.
+For this hackathon, Kiro is your team's main tool. Use it to:
+*   Write your initial product brief and let Kiro generate the spec
+*   Scaffold code from the spec with Al agents
+*   Auto-generate unit tests and documentation
+*   Iterate quickly using Kiro's steering files to guide style and conventions
+How to Pick a Challenge
+Each team selects one challenge. Choose based on your team's interests and experience level:
+Judging Criteria
+Level	Challenges	Best for
+@ Beginner	Challenge 7	First-time hackathon participants, students new to Al/cloud
+• Standard	Challenges 1-6	Students with some coding or cloud experience
+Stretch	Challenge 8	Experienced teams comfortable with multi-agent architecture
+Criterion	Weight	What judges look for
+Spec quality	25%	Does the Kiro spec clearly define requirements and acceptance criteria?
+Working demo	30%	Does the solution actually run and address the persona's problem?
+Innovation	20%	Creative use of Kiro and AWS services; novel approach to the problem
+Pitch & storytelling	25%	Clear 3-minute presentation; does the team tell a compelling
+

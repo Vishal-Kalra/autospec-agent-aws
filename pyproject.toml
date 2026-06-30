@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autospec"
+version = "0.1.0"
+description = "AutoSpec multi-agent pipeline: brief -> spec -> code -> tests -> verdict"
+requires-python = ">=3.9"
+dependencies = [
+    "pytest>=8.0",
+    "coverage>=7.0",
+    "hypothesis>=6.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.coverage.run]
+branch = false
+source = ["autospec"]

@@ -1,0 +1,47 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "coverage": 100.0,
+  "results": [
+    {
+      "id": "1.1",
+      "name": "test_1_1_calculates_tip_amount",
+      "status": "passed"
+    },
+    {
+      "id": "2.1",
+      "name": "test_2_1_calculates_total_with_tip",
+      "status": "passed"
+    },
+    {
+      "id": "3.1",
+      "name": "test_3_1_splits_per_person",
+      "status": "passed"
+    },
+    {
+      "id": "4.1",
+      "name": "test_4_1_zero_tip_allowed",
+      "status": "passed"
+    },
+    {
+      "id": "5.1",
+      "name": "test_5_1_rejects_people_less_than_one",
+      "status": "passed"
+    },
+    {
+      "id": "5.1",
+      "name": "test_5_1b_rejects_non_integer_people",
+      "status": "passed"
+    },
+    {
+      "id": "6.1",
+      "name": "test_6_1_rejects_negative_bill",
+      "status": "passed"
+    },
+    {
+      "id": "6.1",
+      "name": "test_6_1b_rejects_negative_tip",
+      "status": "passed"
+    }
+  ]
+}

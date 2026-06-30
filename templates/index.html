@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoSpec — AI Multi-Agent Pipeline</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a1a;--s1:#131328;--s2:#1a1a3e;--accent:#00d4ff;--purple:#7c3aed;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--text:#e2e8f0;--dim:#94a3b8;--border:#2d2d5e}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.hdr{padding:1rem 1.5rem;background:linear-gradient(135deg,var(--s1),var(--s2));border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.hdr h1{font-size:1.4rem;background:linear-gradient(90deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.hdr .sub{color:var(--dim);font-size:.7rem;margin-top:.1rem}
+.badge{background:linear-gradient(135deg,var(--purple),#ec4899);color:#fff;padding:.2rem .6rem;border-radius:1rem;font-size:.6rem;font-weight:700}
+.wrap{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 58px)}
+.side{background:var(--s1);border-right:1px solid var(--border);padding:1rem;overflow-y:auto;display:flex;flex-direction:column;gap:.7rem}
+.side h3{font-size:.7rem;color:var(--accent);text-transform:uppercase;letter-spacing:.08em}
+label{display:block;font-size:.65rem;color:var(--dim);margin-bottom:.3rem;text-transform:uppercase}
+textarea,select,input[type=number]{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.5rem;border-radius:.35rem;font-size:.75rem;font-family:inherit}
+textarea{min-height:90px;resize:vertical}
+textarea:focus,select:focus,input:focus{outline:none;border-color:var(--accent)}
+.btn{width:100%;padding:.6rem;border:none;border-radius:.35rem;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+.btn-run{background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff}
+.btn-run:hover{opacity:.9}.btn-run:disabled{opacity:.4;cursor:not-allowed}
+.btn-retry{background:linear-gradient(135deg,var(--yellow),var(--red));color:#fff;margin-top:.4rem}
+.btn-sec{background:transparent;border:1px solid var(--accent);color:var(--accent);margin-top:.4rem;font-size:.7rem}
+.content{padding:1rem;overflow-y:auto;display:flex;flex-direction:column;gap:.8rem}
+/* Pipeline diagram */
+.diagram{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.7rem;background:var(--s1);border-radius:.5rem;border:1px solid var(--border)}
+.node{display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.5rem .7rem;border:2px solid var(--border);border-radius:.4rem;min-width:70px;transition:all .4s}
+.node.active{border-color:var(--accent);box-shadow:0 0 18px rgba(0,212,255,.4);animation:glow 1.5s infinite}
+.node.done{border-color:var(--green);background:rgba(16,185,129,.08)}
+.node.fail{border-color:var(--red);background:rgba(239,68,68,.08)}
+.node .ico{font-size:1.1rem}.node .nm{font-size:.55rem;color:var(--dim)}
+.arr{color:var(--border);font-size:.9rem;transition:color .3s}.arr.on{color:var(--accent)}
+@keyframes glow{0%,100%{box-shadow:0 0 12px rgba(0,212,255,.3)}50%{box-shadow:0 0 24px rgba(0,212,255,.6)}}
+/* Summary */
+.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:.4rem;padding:.5rem;text-align:center}
+.card .v{font-size:1.1rem;font-weight:700;color:var(--accent)}.card .l{font-size:.55rem;color:var(--dim);text-transform:uppercase;margin-top:.1rem}
+.card.ok .v{color:var(--green)}.card.bad .v{color:var(--red)}
+/* Log */
+.log{background:var(--s1);border-radius:.5rem;border:1px solid var(--border);flex:1;display:flex;flex-direction:column;overflow:hidden}
+.log-hdr{padding:.45rem .7rem;background:var(--s2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:var(--dim)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.entries{padding:.5rem;overflow-y:auto;flex:1}
+.entry{padding:.45rem .5rem;margin-bottom:.3rem;border-radius:.3rem;background:var(--bg);border-left:3px solid var(--border);animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.entry.agent_start{border-left-color:var(--accent)}
+.entry.agent_output{border-left-color:var(--dim)}
+.entry.handoff{border-left-color:var(--purple)}
+.entry.verdict{border-left-color:var(--green)}
+.entry.verdict.bad{border-left-color:var(--red)}
+.entry.reattempt{border-left-color:var(--yellow)}
+.entry.error{border-left-color:var(--red)}
+.entry.artifact_saved{border-left-color:var(--yellow)}
+.entry.pipeline_start,.entry.pipeline_done{border-left-color:var(--accent)}
+.entry-hdr{display:flex;align-items:center;gap:.3rem;margin-bottom:.1rem}
+.entry-tag{font-size:.55rem;padding:.05rem .2rem;border-radius:.15rem;font-weight:700;background:rgba(0,212,255,.12);color:var(--accent)}
+.entry.handoff .entry-tag{background:rgba(124,58,237,.12);color:var(--purple)}
+.entry.reattempt .entry-tag{background:rgba(245,158,11,.12);color:var(--yellow)}
+.entry.error .entry-tag{background:rgba(239,68,68,.12);color:var(--red)}
+.entry.pipeline_done .entry-tag{background:rgba(16,185,129,.12);color:var(--green)}
+.entry-agent{font-size:.65rem;color:var(--accent);font-weight:600}
+.entry-time{font-size:.55rem;color:var(--dim);margin-left:auto}
+.entry-body{font-size:.7rem;color:var(--dim);white-space:pre-wrap;word-break:break-word;max-height:120px;overflow-y:auto;line-height:1.35}
+.hidden{display:none}
+@media(max-width:768px){.wrap{grid-template-columns:1fr}.summary{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="hdr"><div><h1>⚡ AutoSpec</h1><div class="sub">Multi-Agent AI Pipeline · Brief → Spec → Code → Test → Review</div></div><div class="badge">AWS KIRO HACKATHON</div></div>
+<div class="wrap">
+<div class="side">
+<h3>📝 Product Brief</h3>
+<div><label>Describe what to build</label><textarea id="brief" placeholder="e.g. Build a tip calculator..."></textarea></div>
+<div><label>Tech Stack</label><select id="ts"><option value="Python">Python</option><option value="Node">Node.js</option></select></div>
+<div><label>Coverage Threshold %</label><input type="number" id="qt" value="90" min="0" max="100"></div>
+<button class="btn btn-run" id="runBtn" onclick="go(false)">🚀 Run Pipeline</button>
+<button class="btn btn-retry" onclick="go(true)">🔄 Self-Correction Demo</button>
+<button class="btn btn-sec" onclick="loadDemo()">📋 Load Demo Brief</button>
+<button class="btn btn-sec hidden" id="dlBtn" onclick="dl()">📦 Download Artifacts</button>
+</div>
+<div class="content">
+<div class="diagram">
+<div class="node" id="n-spec"><div class="ico">📄</div><div class="nm">Spec</div></div>
+<div class="arr" id="a1">→</div>
+<div class="node" id="n-build"><div class="ico">🔨</div><div class="nm">Build</div></div>
+<div class="arr" id="a2">→</div>
+<div class="node" id="n-test"><div class="ico">🧪</div><div class="nm">Test</div></div>
+<div class="arr" id="a3">→</div>
+<div class="node" id="n-review"><div class="ico">✅</div><div class="nm">Review</div></div>
+</div>
+<div class="summary hidden" id="sum">
+<div class="card ok"><div class="v" id="sv">—</div><div class="l">Verdict</div></div>
+<div class="card"><div class="v" id="sc">—</div><div class="l">Coverage</div></div>
+<div class="card ok"><div class="v" id="sp">—</div><div class="l">Passed</div></div>
+<div class="card"><div class="v" id="sf">—</div><div class="l">Failed</div></div>
+<div class="card"><div class="v" id="sr">—</div><div class="l">Retries</div></div>
+</div>
+<div class="log">
+<div class="log-hdr"><div class="dot hidden" id="ld"></div><span>Agent Activity Stream</span></div>
+<div class="entries" id="entries"><div class="entry pipeline_start"><div class="entry-body">Ready. Load the demo brief or type your own, then click Run.</div></div></div>
+</div>
+</div>
+</div>
+<script>
+let running=false,runId='';
+function loadDemo(){fetch('/api/demo-brief').then(r=>r.json()).then(d=>{document.getElementById('brief').value=d.brief;document.getElementById('ts').value=d.tech_stack;document.getElementById('qt').value=d.quality_threshold})}
+function reset(){document.getElementById('entries').innerHTML='';document.getElementById('sum').classList.add('hidden');document.getElementById('dlBtn').classList.add('hidden');['spec','build','test','review'].forEach(n=>document.getElementById('n-'+n).className='node');['a1','a2','a3'].forEach(a=>document.getElementById(a).className='arr')}
+function activate(agent){const m={'Spec Agent':'spec','Build Agent':'build','Test Agent':'test','Review Agent':'review'};for(const[k,v]of Object.entries(m))if(agent.includes(k))document.getElementById('n-'+v).className='node active'}
+function done(from){const m={'Spec Agent':'spec','Build Agent':'build','Test Agent':'test','Review Agent':'review'};const am={'Spec Agent':'a1','Build Agent':'a2','Test Agent':'a3'};for(const[k,v]of Object.entries(m))if(from.includes(k))document.getElementById('n-'+v).className='node done';for(const[k,v]of Object.entries(am))if(from.includes(k))document.getElementById(v).className='arr on'}
+function log(type,agent,text){const el=document.createElement('div');el.className='entry '+type;if(type==='verdict'&&text.includes('NOT'))el.className+=' bad';const t=new Date().toLocaleTimeString();const p=text.length>400?text.slice(0,400)+'…':text;el.innerHTML=`<div class="entry-hdr"><span class="entry-tag">${type.replace('_',' ')}</span><span class="entry-agent">${agent}</span><span class="entry-time">${t}</span></div><div class="entry-body">${esc(p)}</div>`;document.getElementById('entries').appendChild(el);el.scrollIntoView({behavior:'smooth'})}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function go(retry){
+if(running)return;running=true;reset();
+document.getElementById('runBtn').disabled=true;document.getElementById('runBtn').textContent='⏳ Running...';document.getElementById('ld').classList.remove('hidden');
+fetch('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({brief:document.getElementById('brief').value,tech_stack:document.getElementById('ts').value,quality_threshold:document.getElementById('qt').value,demo_retry:retry})}).then(res=>{
+const reader=res.body.getReader(),dec=new TextDecoder();let buf='';
+function read(){reader.read().then(({done:d,value:v})=>{if(d){fin();return}buf+=dec.decode(v,{stream:true});const lines=buf.split('\n');buf=lines.pop();for(const l of lines)if(l.startsWith('data: ')){try{handle(JSON.parse(l.slice(6)))}catch(e){}}read()})}read()
+}).catch(e=>{log('error','',e.message);fin()})
+}
+function handle(ev){
+const{type,data}=ev;const agent=data.agent||'';let txt='';
+switch(type){
+case'pipeline_start':txt='Pipeline started';break;
+case'agent_start':activate(agent);txt=agent+' working...';break;
+case'agent_output':txt=(data.summary||'')+'\n'+(data.content||'').slice(0,300);break;
+case'handoff':done(data.from);txt=data.from+' → '+data.to;break;
+case'verdict':txt=data.verdict+' · Coverage: '+(data.coverage||0)+'% · Gate: '+data.quality_gate;if(data.gaps&&data.gaps.length)txt+='\nGaps: '+data.gaps.map(g=>g.id+': '+g.desc).join('; ');if(data.verdict==='ALIGNED')document.getElementById('n-review').className='node done';else document.getElementById('n-review').className='node fail';break;
+case'reattempt':txt='🔄 Retry '+data.attempt+'/'+data.limit+' — '+data.gaps.map(g=>g.id).join(', ');['build','test','review'].forEach(n=>document.getElementById('n-'+n).className='node');break;
+case'artifact_saved':txt='💾 '+data.name;break;
+case'error':txt='❌ '+agent+': '+data.message;break;
+case'pipeline_done':txt='✅ Done: '+data.status;showSum(data);document.getElementById('dlBtn').classList.remove('hidden');break;
+default:txt=JSON.stringify(data)}
+if(type!=='keepalive')log(type,agent,txt)}
+function showSum(d){document.getElementById('sum').classList.remove('hidden');document.getElementById('sv').textContent=d.verdict==='ALIGNED'?'✅ ALIGNED':'❌ '+d.verdict;document.getElementById('sc').textContent=(d.coverage||0)+'%';document.getElementById('sp').textContent=d.passed||0;document.getElementById('sf').textContent=d.failed||0;document.getElementById('sr').textContent=d.reattempts||0;runId=d.run_id||''}
+function dl(){const dirs=document.querySelector('.entry.pipeline_start .entry-body');fetch('/api/history').then(r=>r.json()).then(h=>{if(h.length)window.open('/api/artifacts/'+h[h.length-1].id)})}
+function fin(){running=false;document.getElementById('runBtn').disabled=false;document.getElementById('runBtn').textContent='🚀 Run Pipeline';document.getElementById('ld').classList.add('hidden')}
+loadDemo();
+</script>
+</body>
+</html>
